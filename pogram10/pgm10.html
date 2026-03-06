@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AJAX Examples</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #e9ecef;
+        display: flex;
+        justify-content: center;
+        padding-top: 50px;
+    }
+    .container {
+        width: 600px;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    h1 { margin-bottom: 25px; font-size: 32px; font-weight: bold; }
+    .btn {
+        display: block;
+        width: 100%;
+        margin: 12px 0;
+        padding: 14px;
+        font-size: 18px;
+        color: white;
+        background: #007bff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn:hover { background: #005fcc; }
+    #result {
+        margin-top: 30px;
+        padding: 18px;
+        font-size: 18px;
+        text-align: left;
+        white-space: pre-wrap;
+        border-radius: 8px;
+        border: 1px solid #d0dce4;
+        display: none;
+    }
+    .plain-ajax  { 
+        background: #f0f8ff; 
+        border-color: #8ab6d6; 
+    }
+    .jquery-ajax { 
+        background: #f5fffa; 
+        border-color: #98fb98; 
+    }
+    .jquery-json { 
+        background: #fffaf0; 
+        border-color: #ffcf55; 
+    }
+    .parse-json  { 
+        background: #fff0f5; 
+        border-color: #ff9acb; 
+        }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>AJAX Examples</h1>
+    <button class="btn" onclick="loadPlainAjax()">Load Text (Plain AJAX)</button>
+    <button class="btn" id="jqTxt">Load Text (jQuery AJAX)</button>
+    <button class="btn" id="jqJson">Load JSON (jQuery getJSON)</button>
+    <button class="btn" onclick="parseJSONExample()">Load and Parse JSON</button>
+    <div id="result"></div>
+</div>
+<script>
+function showOutput(type, text) {
+    const box = document.getElementById("result");
+    box.className = type;
+    box.style.display = "block";
+    box.textContent = text;
+} 
+// (a) Plain AJAX
+function loadPlainAjax() {
+    let req = new XMLHttpRequest();
+    req.open("GET", "data.txt");
+    req.onload  = () => showOutput("plain-ajax", req.responseText);
+    req.onerror = () => showOutput("plain-ajax", "Error loading text file.");
+    req.send();
+}
+// (b) jQuery AJAX
+$("#jqTxt").click(() => {
+    $.ajax({
+        url: "data.txt",
+        success: data => showOutput("jquery-ajax", data),
+        error:   ()   => showOutput("jquery-ajax", "Error loading text file.")
+    });
+});
+// (c) jQuery getJSON
+$("#jqJson").click(() => {
+    $.getJSON("data.json")
+        .done(data => showOutput("jquery-json", JSON.stringify(data, null, 2)))
+        .fail(()   => showOutput("jquery-json", "Error loading JSON file."));
+});
+// (d) jQuery get + parse JSON
+function parseJSONExample() {
+    $.get("data.json")
+        .done(data => {
+            let json = (typeof data === "string") ? JSON.parse(data) : data;
+            showOutput("parse-json", JSON.stringify(json, null, 2));
+        })
+        .fail(() => showOutput("parse-json", "Error loading JSON file."));
+}
+</script>
+</body>
+</html>
+
